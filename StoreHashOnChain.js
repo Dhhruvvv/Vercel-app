@@ -3,48 +3,52 @@ const fs = require('fs');
 require('dotenv').config();
 const { JsonRpcProvider } = require('ethers/providers');
 
-// Your private key
-const privateKey = `${process.env.PRIVATE_KEY}`;
+// Your private 
 
-// Create an account from the private key
-const wallet = new ethers.Wallet(privateKey);
 
-// Connect to the Polygon Testnet Mumbai
-const provider = new JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
 
-// Set the wallet as the default signer
-const connectedWallet = wallet.connect(provider);
+    const privateKey = `${process.env.PRIVATE_KEY}`;
 
-// Read the ABI from a JSON file
-const contractABI = JSON.parse(fs.readFileSync('./constants/ABI.json'));
+    // Create an account from the private key
+    const wallet = new ethers.Wallet(privateKey);
 
-// Replace with your contract address
-const contractAddress = '0x1Eb5961b8cB6f054BdF8934D8b12153a97b71c6e';
+    // Connect to the Polygon Testnet Mumbai
+    const provider = new JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
 
-// Create a contract instance
-const contract = new ethers.Contract(contractAddress, contractABI, connectedWallet);
+    // Set the wallet as the default signer
+    const connectedWallet = wallet.connect(provider);
 
-// Function to store a string
-async function storeString(newString) {
- try {
-     await contract.storeString(newString);
-     console.log('String stored successfully');
- } catch (error) {
-     console.error('Error while storing string:', error);
- }
-}
+    // Read the ABI from a JSON file
+    const contractABI = JSON.parse(fs.readFileSync('./constants/ABI.json'));
 
-// Function to retrieve a string
-async function getString() {
- try {
-     const result = await contract.getString();
-     console.log('Stored string:', result);
- } catch (error) {
-     console.error('Error while retrieving string:', error);
- }
-}
+    // Replace with your contract address
+    const contractAddress = '0x6fb951f33e4e52ef0e9c1f78325a9223d7dd1f4d';
 
-// Usage
-// storeString('QmRkMXumNY4aHVQR1owCWKHsrSwemMPHS2vDEaaDNmGv4c');
+    // Create a contract instance
+    const contract = new ethers.Contract(contractAddress, contractABI, connectedWallet);
 
-getString();
+    // Function to store a string
+   const storeUserHash= async (userRef, IPFShash)=> {
+        try {
+            await contract.setUserHash(userRef, IPFShash);
+            console.log('String stored successfully');
+        } catch (error) {
+            console.error('Error while storing string:', error);
+        }
+    }
+
+    // Function to retrieve a string
+   const getUserHash= async(userRef)=> {
+        try {
+            const result = await contract.getUserHash(userRef);
+            console.log('Stored string:', result);
+        } catch (error) {
+            console.error('Error while retrieving string:', error);
+        }
+    }
+
+// storeUserHash('M5s4UA8ISs0NVnM1p6Nz', 'QmVXJZ7kZzYy5QKg9q5p8i4xV9qB9Yq8R9cKX6b7p6jHtZ')
+// getUserHash('M5s4UA8ISs0NVnM1p6Nz')
+
+
+module.exports = { storeUserHash, getUserHash, contract,contractAddress,contractABI,connectedWallet,provider,wallet,privateKey };

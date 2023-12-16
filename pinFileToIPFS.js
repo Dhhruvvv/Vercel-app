@@ -5,16 +5,17 @@ require('dotenv').config()
 
 const JWT = process.env.JWT
 
-const pinFileToIPFS = async () => {
+const pinFileToIPFS = async (path) => {
+  let hash='';
     const formData = new FormData();
   
-    const src = "./Data/johndoe_encrypt.txt";
+    const src = `${path}.txt`;
     
-    const file = fs.createReadStream(src)
+    const file = await fs.createReadStream(src)
     formData.append('file', file)
     
     const pinataMetadata = JSON.stringify({
-      name: 'Output',
+      name: `${path}.txt`,
     });
     formData.append('pinataMetadata', pinataMetadata);
     
@@ -31,10 +32,12 @@ const pinFileToIPFS = async () => {
           'Authorization': `Bearer ${JWT}`
         }
       });
-      console.log(res.data);
+      return res.data.IpfsHash;
     } catch (error) {
       console.log(error);
     }
+
+   
 }
 
-pinFileToIPFS()
+module.exports = pinFileToIPFS;
